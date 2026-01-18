@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ vendor.shop_name }} — Vendor{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 py-16">
+
+  <!-- Vendor Header -->
+  <div class="flex items-center gap-6 mb-12">
+    {% if vendor.logo %}
+      <img src="{{ vendor.logo.url }}"
+           class="w-24 h-24 rounded-xl object-cover border border-neutral-700">
+    {% endif %}
+    <div>
+      <h1 class="text-3xl font-bold text-neutral-100">
+        {{ vendor.shop_name }}
+      </h1>
+      <p class="text-neutral-400 mt-2 max-w-xl">
+        {{ vendor.description|default:"Trusted African vendor on Afrimarket." }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Vendor Products -->
+  <h2 class="text-2xl font-semibold text-neutral-100 mb-6">
+    Products by {{ vendor.shop_name }}
+  </h2>
+
+  {% if products %}
+    <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+      {% for product in products %}
+        {% include "partials/_product_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-neutral-500">No products available yet.</p>
+  {% endif %}
+
+</section>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "{{ vendor.shop_name|escapejs }}",
+  "url": "{{ request.build_absolute_uri }}",
+  "description": "{{ vendor.description|escapejs }}"
+}
+</script>
+
+{% endblock %}

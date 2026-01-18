@@ -1,0 +1,45 @@
+{% for category in categories %}
+<div class="bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden shadow hover:shadow-lg transition">
+    <img src="{{ category.image.url }}" alt="{{ category.name }}" class="w-full h-48 object-cover">
+
+    <div class="p-4">
+        <a href="{{ category.get_absolute_url }}" >
+<h3 class="text-lg font-semibold text-amber-400">{{ category.name }}</h3> 
+</a>
+        <p class="mt-2 text-neutral-400">{{ category.description|truncatewords:20 }}</p>
+
+        <!-- Products Preview -->
+        <!--div class="mt-4 space-y-2">
+            {% for product in category.products.all|slice:":3" %}
+            <div class="flex justify-between items-center border-t border-neutral-700 pt-2">
+                <div>
+                    <span>{{ product.name }}</span>
+                    <p class="text-sm text-gray-400">${{ product.price }}</p>
+                </div>
+                <button 
+                    hx-post="{% url 'orders:add-to-cart' product.id %}" 
+                    hx-target="#cart-content" 
+                    hx-swap="innerHTML"
+                    class="bg-amber-500 text-black px-3 py-1 rounded hover:bg-amber-400 text-sm">
+                    🛒
+                </button>
+            </div>
+            {% endfor %}
+        </div-->
+
+        {% if category.products.count > 3 %}
+        <!-- Load More Products Button -->
+        <button 
+            hx-get="{% url 'products:load_more_products' category.id %}" 
+            hx-target="#category-{{ category.id }}-products"
+            hx-swap="afterend"
+            class="mt-4 block w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 text-sm font-semibold">
+            Load More Products
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Container for dynamically loaded products -->
+    <div id="category-{{ category.id }}-products"></div>
+</div>
+{% endfor %}

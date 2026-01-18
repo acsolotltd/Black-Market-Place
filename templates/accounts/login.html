@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login | Afrimarket{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-neutral-950 px-4 py-12">
+    <div class="max-w-md w-full bg-neutral-900 rounded-2xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-center text-amber-400 mb-6">
+            Welcome Back
+        </h2>
+        <p class="text-neutral-400 text-center mb-6">
+            Login to your Afrimarket account
+        </p>
+
+        <form method="POST" class="space-y-4" id="login-form">
+            {% csrf_token %}
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-neutral-300">Email</label>
+                <input type="email" name="email" id="email" placeholder="john@example.com"
+                       class="mt-1 block w-full px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                       hx-get="{% url 'accounts:validate-email' %}"
+                       hx-trigger="keyup changed delay:500ms"
+                       hx-target="#email-feedback"
+                       hx-swap="innerHTML">
+                <div id="email-feedback" class="text-sm mt-1 text-amber-400"></div>
+            </div>
+
+            <!-- Password with show/hide -->
+            <div x-data="{ show: false }">
+                <label for="password" class="block text-sm font-medium text-neutral-300">Password</label>
+                <div class="relative">
+                    <input :type="show ? 'text' : 'password'" name="password" id="password" placeholder="********"
+                           class="mt-1 block w-full px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-0 px-3 py-2 text-neutral-400 hover:text-neutral-200 focus:outline-none">
+                        <span x-text="show ? '🙈' : '👁️'"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="flex items-center justify-between text-sm text-neutral-400">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" name="remember" class="form-checkbox text-amber-400">
+                    Remember Me
+                </label>
+                <a href="{#% url 'accounts:password_reset' %}" class="hover:underline text-amber-400">Forgot Password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                    class="w-full mt-4 bg-amber-500 hover:bg-amber-400 text-black font-semibold py-3 rounded-xl transition">
+                Login
+            </button>
+        </form>
+
+        <p class="mt-6 text-center text-neutral-400 text-sm">
+            Don’t have an account?
+            <a href="{% url 'accounts:register' %}" class="text-amber-400 hover:underline">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

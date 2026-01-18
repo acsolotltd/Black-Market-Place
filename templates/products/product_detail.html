@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Afrimart | {{ product.name }}
+{% endblock %}
+
+{% block content %}
+<main class="pt-16 bg-neutral-950 text-neutral-100">
+
+    <!-- Product Header -->
+    <section class="py-10 px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-10">
+
+      <!-- Product Image Gallery -->
+{{ product_images|json_script:"images" }}
+<div x-data="productGallery(images)" class="space-y-4">
+    <!-- Main Image -->
+    <div class="w-full h-96 bg-neutral-900 rounded-xl overflow-hidden relative flex items-center justify-center">
+        <img :src="images[activeImage]" alt="{{ product.name }}" class="w-full h-full object-contain transition duration-300">
+        <!-- Previous Button -->
+        <button @click="prevImage()" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-neutral-800 bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full"> ❮ </button>
+        <!-- Next Button -->
+        <button @click="nextImage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-neutral-800 bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full"> ❯ </button>
+    </div>
+    <!-- Thumbnails -->
+    <div class="flex gap-2 justify-center overflow-x-auto">
+        <template x-for="(img, index) in images" :key="index">
+            <img :src="img" @click="activeImage = index" :class="{'border-amber-400 border-2': activeImage === index, 'border-neutral-700 border': activeImage !== index}" class="w-20 h-20 object-cover rounded cursor-pointer flex-shrink-0">
+        </template>
+    </div>
+</div>
+
+<!-- ... rest of the code ... -->
+
+
+    
+        <!-- Product Info -->
+        <div class="space-y-6">
+            <h1 class="text-3xl font-bold">{{ product.name }}</h1>
+            <p class="text-amber-400 text-2xl font-semibold">${{ product.price }}</p>
+            <p class="text-neutral-400">{{ product.description }}</p>
+
+            <!-- Vendor Info -->
+            <div class="border-t border-neutral-700 pt-4">
+                <h3 class="text-lg font-semibold">Vendor</h3>
+                <p class="text-neutral-300">{{ product.vendor.name }}</p>
+                <p class="text-neutral-500 text-sm">{{ product.vendor.bio }}</p>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <button hx-post="{% url 'orders:add-to-cart' product.id %}" 
+                    hx-target="#cart-content" 
+                    hx-swap="innerHTML"
+                    class="w-full bg-amber-500 text-black py-3 rounded-lg hover:bg-amber-400 font-semibold">
+                🛒 Add to Cart
+            </button>
+        </div>
+    </section>
+
+    <!-- Reviews & Ratings -->
+    <section class="py-16 px-6 max-w-7xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6">Customer Reviews</h2>
+
+        <div id="reviews" hx-get="{% url 'products:product_reviews' product.id %}" 
+             hx-trigger="load" 
+             hx-swap="innerHTML">
+            <p class="text-neutral-400">Loading reviews...</p>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('productGallery', () => ({
+            activeImage: 0,
+            productImages: [
+                {% for image in product_images %}
+                "{{ image.url }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+        }))
+    })
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.name|escapejs }}",
+  "image": "{{ product.image.url }}",
+  "description": "{{ product.description|truncatechars:160|escapejs }}",
+  "sku": "{{ product.id }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ product.vendor.shop_name|escapejs }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.build_absolute_uri }}",
+    "priceCurrency": "NGN",
+    "price": "{{ product.price }}",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "{{ product.vendor.shop_name|escapejs }}"
+    }
+  }
+}
+</script>
+<script>
+/*
+document.addEventListener('alpine:init', () => {
+    Alpine.data('productGallery', (imagesList) => ({
+        images: JSON.parse(imagesList),
+        activeImage: 0,
+        prevImage() {
+            this.activeImage = (this.activeImage - 1 + this.images.length) % this.images.length;
+        },
+        nextImage() {
+            this.activeImage = (this.activeImage + 1) % this.images.length;
+        },
+        init() {
+            // Optional: swipe support for mobile
+            let touchstartX = 0;
+            let touchendX = 0;
+            const gallery = this.$el;
+            gallery.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
+            gallery.addEventListener('touchend', e => {
+                touchendX = e.changedTouches[0].screenX;
+                if (touchendX < touchstartX - 40) this.nextImage();
+                if (touchendX > touchstartX + 40) this.prevImage();
+            });
+        }
+    }));
+});*/
+</script>
+
+{% endblock %}

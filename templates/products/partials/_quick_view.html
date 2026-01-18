@@ -1,0 +1,28 @@
+<div class="grid md:grid-cols-2 gap-6">
+  <img src="{{ product.image.url }}"
+       alt="{{ product.name }}"
+       class="rounded-xl w-full object-cover">
+
+  <div>
+    <h2 class="text-2xl font-bold text-neutral-100">
+      {{ product.name }}
+    </h2>
+
+    <p class="mt-2 text-amber-400 text-xl font-semibold">
+      ${{ product.price }}
+    </p>
+
+    <p class="mt-4 text-neutral-400 text-sm">
+      {{ product.description|truncatewords:40 }}
+    </p>
+
+    <button
+      hx-post="{% url 'orders:add-to-cart' product.id %}"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      hx-target="#cart-content"
+      hx-swap="innerHTML"
+      class="mt-6 w-full bg-amber-500 text-black py-3 rounded-xl font-semibold">
+      Add to Cart
+    </button>
+  </div>
+</div>

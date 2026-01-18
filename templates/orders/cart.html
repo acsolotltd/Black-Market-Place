@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Afrimarket | Your Cart
+{% endblock %}
+
+{% block content %}
+<main class="pt-16 bg-neutral-950 text-neutral-100">
+
+    <section class="py-16 px-6 max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Your Shopping Cart</h1>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Cart Items List -->
+            <div class="md:col-span-2 space-y-6">
+                <div id="cart-items">
+                    {% for item in cart.items.all %}
+                    <div class="flex flex-col sm:flex-row items-center sm:justify-between bg-neutral-900 p-4 rounded-xl border border-neutral-800">
+                        
+                        <div class="flex items-center gap-4">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-20 h-20 object-cover rounded">
+                            <div>
+                                <h3 class="font-semibold text-amber-400">{{ item.product.name }}</h3>
+                                <p class="text-neutral-400">${{ item.product.price }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 mt-4 sm:mt-0">
+                            <!-- Quantity Adjustment -->
+                            <button hx-post="{% url 'orders:update_quantity' item.id %}" 
+                                    hx-vals='{"action":"decrease"}'
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    class="px-2 py-1 bg-neutral-800 hover:bg-neutral-700 rounded text-sm">
+                                -
+                            </button>
+
+                            <span class="px-2">{{ item.quantity }}</span>
+
+                            <button hx-post="{% url 'orders:update_quantity' item.id %}" 
+                                    hx-vals='{"action":"increase"}'
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    class="px-2 py-1 bg-neutral-800 hover:bg-neutral-700 rounded text-sm">
+                                +
+                            </button>
+
+                            <!-- Remove Item -->
+                            <button hx-post="{% url 'orders:remove_item' item.id %}" 
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    class="ml-4 px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-sm text-white">
+                                🗑
+                            </button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-neutral-400">Your cart is empty.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="bg-neutral-900 p-6 rounded-xl border border-neutral-800 h-max">
+                <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+
+                <div class="flex justify-between text-neutral-400 mb-2">
+                    <span>Subtotal</span>
+                    <span>${{ cart.subtotal }}</span>
+                </div>
+
+                <div class="flex justify-between text-neutral-400 mb-4">
+                    <span>Shipping</span>
+                    <span>${{ cart.shipping_cost }}</span>
+                </div>
+
+                <div class="flex justify-between font-semibold text-amber-400 mb-6 text-lg">
+                    <span>Total</span>
+                    <span>${{ cart.total }}</span>
+                </div>
+
+                <a href="{% url 'orders:checkout' %}" 
+                   class="block w-full bg-amber-500 hover:bg-amber-400 text-black py-3 text-center rounded-lg font-semibold">
+                   Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}

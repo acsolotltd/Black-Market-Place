@@ -1,0 +1,103 @@
+{% include "base.html" %}
+{% block content %}
+<form hx-post="{% url 'accounts:add_product' %}" hx-encoding="multipart/form-data" hx-target="                                  
+    {% csrf_token %}
+    
+    <!-- Name -->
+    <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+        <input type="text" name="name" id="name" hx-post="{% url 'accounts:validate_name' %}" hx-trigger="change" hx-target="#name-errors" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm">
+        <div id="name-errors"></div>
+    </div>
+
+    <!-- Description -->
+    <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea name="description" id="description" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm"></textarea>
+    </div>
+
+    <!-- Price -->
+    <div>
+        <label for="price" class="block text-sm font-medium text-gray-700">Price (₦)</label>
+        <input type="number" name="price" id="price" step="0.01" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm">
+    </div>
+
+    <!-- Category -->
+    <div>
+        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+        <select name="category" id="category" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm">
+            {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Images -->
+    <div id="image-upload" class="border-2 border-dashed border-amber-300 rounded-md p-4 text-center cursor-pointer hover:border-amber-500 transition">
+        <input type="file" name="images" id="images" multiple class="hidden" onchange="previewImages(event)">
+        <svg xmlns="http:                                                                                                                      
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <p class="mt-2 text-sm text-gray-500">Drag & drop images or <span class="text-amber-600 hover:underline">click to select</span></p>
+        <div id="image-preview" class="flex flex-wrap gap-2 mt-2"></div>
+    </div>
+
+    <!-- Uploaded Images -->
+{% if product and product.id %}
+    <div id="uploaded-images" hx-trigger="end" hx-post="{% url 'products:reorder_images' product.id %}">
+        {% for image in product.images.all %}
+            <div class="relative cursor-move" data-id="{{ image.id }}">
+                <img src="{{ image.image.url }}" class="h-20 w-20 object-cover rounded">
+                <button hx-post="{% url 'products:delete_image' image.id %}" hx-target="this" hx-swap="outerHTML" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">×</button>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div id="uploaded-images">
+      {% for image in product.images.all %}
+            <div class="relative cursor-move" data-id="{{ image.id }}">
+                <img src="{{ image.image.url }}" class="h-20 w-20 object-cover rounded">
+                <button hx-post="{% url 'products:delete_image' image.id %}" hx-target="this" hx-swap="outerHTML" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">×</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+        Add Product
+    </button>
+
+    <div id="form-response"></div>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/dist/sortable.min.js"></script>
+<script>
+function previewImages(event) {
+    const preview = document.getElementById('image-preview');
+    preview.innerHTML = '';
+    Array.from(event.target.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'h-20 w-20 object-cover rounded';
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+/*
+const sortable = Sortable.create(document.getElementById('uploaded-images'), {
+    animation: 150,
+    onEnd: () => {
+        const ids = Array.from(document.querySelectorAll('[data-id]')).map(el => el.dataset.id);
+        fetch(`{#% url 'accounts:reorder_images' product.id %}`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify(ids)
+        });
+    }
+});
+*/
+</script>
+{% endblock %}

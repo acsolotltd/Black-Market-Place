@@ -1,0 +1,7 @@
+<div class="flex justify-between items-center bg-neutral-800 p-4 rounded border border-neutral-700 mt-2">
+    <div>
+        <h4 class="font-semibold text-amber-400">{{ product.name }}</h4>
+        <p class="text-neutral-400">${{ product.price }}</p>
+    </div>
+    <a href="{% url 'vendor:edit_product' product.id %}" class="text-amber-400 hover:underline">Edit</a>
+</div>

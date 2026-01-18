@@ -1,0 +1,66 @@
+<div class="bg-neutral-900 p-4 rounded-lg border border-neutral-800 space-y-4">
+  <h3 class="font-semibold text-neutral-100">Filters</h3>
+
+  <!-- Price -->
+  <div>
+    <label class="text-sm text-neutral-300">Price</label>
+    <div class="flex gap-2 mt-2">
+      <input type="number" name="price_min" id="price-min" placeholder="Min"
+             class="w-1/2 px-3 py-2 rounded bg-neutral-800 text-neutral-100"
+             hx-get="{% url 'products:category-products-htmx' category.slug %}"
+             hx-target="#product-list"
+             hx-trigger="change delay:400ms"
+             hx-push-url="true">
+      <input type="number" name="price_max" id="price-max" placeholder="Max"
+             class="w-1/2 px-3 py-2 rounded bg-neutral-800 text-neutral-100"
+             hx-get="{% url 'products:category-products-htmx' category.slug %}"
+             hx-target="#product-list"
+             hx-trigger="change delay:400ms"
+             hx-push-url="true">
+    </div>
+  </div>
+
+  <!-- Vendors -->
+  <div>
+    <label class="text-sm text-neutral-300">Vendor</label>
+    <div class="mt-2 space-y-2 max-h-48 overflow-auto pr-2">
+      {% for v in vendors %}
+        <button
+          hx-get="{% url 'products:category-products-htmx' category.slug %}?vendor={{ v.id }}"
+          hx-target="#product-list"
+          hx-swap="innerHTML"
+          hx-push-url="true"
+          class="w-full text-left px-2 py-2 rounded bg-neutral-800 text-neutral-100 hover:bg-neutral-700">
+          {{ v.shop_name }} <span class="text-neutral-400 text-xs">({{ v.product_count }})</span>
+        </button>
+      {% empty %}
+        <div class="text-neutral-500 text-sm">No vendors</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Popularity quick filter -->
+  <div>
+    <label class="text-sm text-neutral-300">Quick</label>
+    <div class="mt-2 flex gap-2">
+      <button hx-get="{% url 'products:category-products-htmx' category.slug %}?sort=popularity"
+              hx-target="#product-list" hx-swap="innerHTML" hx-push-url="true"
+              class="px-3 py-2 rounded bg-neutral-800 text-neutral-100 hover:bg-neutral-700">
+        Most popular
+      </button>
+      <button hx-get="{% url 'products:category-products-htmx' category.slug %}?sort=newest"
+              hx-target="#product-list" hx-swap="innerHTML" hx-push-url="true"
+              class="px-3 py-2 rounded bg-neutral-800 text-neutral-100 hover:bg-neutral-700">
+        Newest
+      </button>
+    </div>
+  </div>
+
+  <!-- Clear filters -->
+  <div>
+    <button hx-get="{% url 'products:category-products-htmx' category.slug %}" hx-target="#product-list" hx-swap="innerHTML" hx-push-url="true"
+            class="w-full px-3 py-2 rounded bg-neutral-800 text-neutral-100 hover:bg-neutral-700">
+      Clear filters
+    </button>
+  </div>
+</div>

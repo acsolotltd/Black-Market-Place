@@ -1,0 +1,418 @@
+<article class="group relative overflow-hidden rounded-xl bg-neutral-900 shadow-lg hover:shadow-2xl transition-all duration-300">
+  <!-- Image -->
+  <a href="{{ product.get_absolute_url }}" class="block">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+  </a>
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+  <!-- Badges -->
+  <div class="absolute top-3 left-3 flex gap-2">
+    {% if product.is_new %}<span class="bg-amber-500 text-xs px-2 py-1 rounded-full font-bold animate-pulse">New</span>{% endif %}
+    {% if product.on_sale %}<span class="bg-red-500 text-xs px-2 py-1 rounded-full font-bold animate-bounce">Sale</span>{% endif %}
+  </div>
+
+  <!-- Actions -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <button hx-get="{% url 'products:quick-view' product.slug %}" hx-target="                                                                                                                                                                                
+    <button hx-post="{% url 'orders:add-to-cart' product.id %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#cart-content" hx-swap="innerHTML" class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transition" aria-label="Add to cart">🛒</button>
+  </div>
+
+  <!-- Content -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/30 backdrop-blur-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+    <a href="{{ product.get_absolute_url }}">
+      <h3 class="font-semibold text-neutral-100 group-hover:text-amber400 transition">{{ product.name }}</h3>
+    </a>
+    <div class="mt-1 flex items-center gap-2">
+      {% if product.on_sale %}
+      <p class="text-amber-400 font-bold">₦{{ product.sale_price|floatformat:2 }}</p>
+      <p class="text-neutral-500 line-through text-sm">₦{{ product.price|floatformat:2 }}</p>
+      {% else %}
+      <p class="text-amber-400 font-bold">₦{{ product.price|floatformat:2 }}</p>
+      {% endif %}
+    </div>
+    <div class="flex items-center justify-between mt-2 text-xs">
+      <a href="{{ product.vendor.get_absolute_url }}" class="text-neutral-400 hover:text-amber-400">{{ product.vendor.shop_name }}</a>
+      <div class="flex items-center gap-1">
+        <span class="text-amber-400">★</span>
+        <span class="text-neutral-400">{{ product.rating|floatformat:1 }}/5</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+<article class="group relative overflow-hidden rounded-xl bg-neutral-900 shadow-lg hover:shadow-2xl transition-all duration-300">
+  <!-- Image -->
+  <a href="{{ product.get_absolute_url }}" class="block">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+  </a>
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+  <!-- Badges -->
+  <div class="absolute top-3 left-3 flex gap-2">
+    {% if product.is_new %}<span class="bg-amber-500 text-xs px-2 py-1 rounded-full font-bold animate-pulse">New</span>{% endif %}
+    {% if product.on_sale %}<span class="bg-red-500 text-xs px-2 py-1 rounded-full font-bold animate-bounce">Sale</span>{% endif %}
+  </div>
+
+  <!-- Actions -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <button hx-get="{% url 'products:quick-view' product.slug %}" hx-target="                                                                                                                                                                                
+    <button hx-post="{% url 'orders:add-to-cart' product.id %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#cart-content" hx-swap="innerHTML" class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transition" aria-label="Add to cart">🛒</button>
+  </div>
+
+  <!-- Content -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/30 backdrop-blur-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+    <a href="{{ product.get_absolute_url }}">
+      <h3 class="font-semibold text-neutral-100 group-hover:text-amber-400 transition">{{ product.name }}</h3>
+    </a>
+    <div class="mt-1 flex items-center gap-2">
+      {% if product.on_sale %}
+      <p class="text-amber-400 font-bold">₦{{ product.sale_price|floatformat:2 }}</p>
+      <p class="text-neutral-500 line-through text-sm">₦{{ product.price|floatformat:2 }}</p>
+      {% else %}
+      <p class="text-amber-400 font-bold">₦{{ product.price|floatformat:2 }}</p>
+      {% endif %}
+    </div>
+    <div class="flex items-center justify-between mt-2 text-xs">
+      <a href="{{ product.vendor.get_absolute_url }}" class="text-neutral-400 hover:text-amber-400">{{ product.vendor.shop_name }}</a>
+      <div class="flex items-center gap-1">
+        <span class="text-amber-400">★</span>
+        <span class="text-neutral-400">{{ product.rating|floatformat:1 }}/5</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+
+
+<article class="group relative bg-gradient-to-b from-neutral-900 to-neutral-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+  <!-- Product Image -->
+  <a href="{{ product.get_absolute_url }}" class="block overflow-hidden">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
+  </a>
+  
+  <!-- Animated Gradient Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+  
+  <!-- Badges -->
+  <div class="absolute top-3 left-3 flex gap-2">
+    {% if product.is_new %}
+    <span class="bg-amber-500 text-neutral-900 text-xs font-bold px-2 py-1 rounded-full animate-pulse">New</span>
+    {% endif %}
+    {% if product.on_sale %}
+    <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-bounce">Sale</span>
+    {% endif %}
+  </div>
+  
+  <!-- Quick Actions -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <button 
+      hx-get="{% url 'products:quick-view' product.slug %}" 
+      hx-target="                                 
+      hx-trigger="click" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Quick view"
+    >
+      👁
+    </button>
+    <button 
+      hx-post="{% url 'orders:add-to-cart' product.id %}" 
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+      hx-target="#cart-content" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Add to cart"
+    >
+      🛒
+    </button>
+  </div>
+  
+  <!-- Content -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/30 backdrop-blur-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+    <a href="{{ product.get_absolute_url }">
+      <h3 class="font-semibold text-neutral-100 line-clamp-1 group-hover:text-amber-400 transition">
+        {{ product.name }}
+      </h3>
+    </a>
+    <div class="mt-1 flex items-center gap-2">
+      {% if product.on_sale %}
+      <p class="text-amber-400 font-bold text-lg">
+        ₦{{ product.sale_price|floatformat:2 }}
+      </p>
+      <p class="text-neutral-500 line-through text-sm">
+        ₦{{ product.price|floatformat:2 }}
+      </p>
+      {% else %}
+      <p class="text-amber-400 font-bold text-lg">
+        ₦{{ product.price|floatformat:2 }}
+      </p>
+      {% endif %}
+    </div>
+    <div class="flex items-center justify-between mt-2">
+      <a href="{{ product.vendor.get_absolute_url }}" class="text-xs text-neutral-400 hover:text-amber-400">
+        {{ product.vendor.shop_name }}
+      </a>
+      <div class="flex items-center gap-1">
+        <span class="text-amber-400">★</span>
+        <span class="text-neutral-400 text-xs">{{ product.rating|floatformat:1 }}/5</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+
+<article class="group relative bg-neutral-900 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+  <!-- Product Image -->
+  <a href="{{ product.get_absolute_url }}" class="block overflow-hidden">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
+  </a>
+  
+  <!-- Badges -->
+  <div class="absolute top-3 left-3 flex gap-2">
+    {% if product.is_new %}
+    <span class="bg-amber-500 text-neutral-900 text-xs font-bold px-2 py-1 rounded-full">New</span>
+    {% endif %}
+    {% if product.on_sale %}
+    <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Sale</span>
+    {% endif %}
+  </div>
+  
+  <!-- Quick Actions -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <button 
+      hx-get="{% url 'products:quick-view' product.slug %}" 
+      hx-target="                                 
+      hx-trigger="click" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Quick view"
+    >
+      👁
+    </button>
+    <button 
+      hx-post="{% url 'orders:add-to-cart' product.id %}" 
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+      hx-target="#cart-content" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Add to cart"
+    >
+      🛒
+    </button>
+  </div>
+  
+  <!-- Content -->
+  <div class="p-4 bg-neutral-800/50 backdrop-blur-sm">
+    <a href="{{ product.get_absolute_url }}">
+      <h3 class="font-semibold text-neutral-100 line-clamp-1 group-hover:text-amber-400 transition">
+        {{ product.name }}
+      </h3>
+    </a>
+    <div class="mt-1 flex items-center gap-2">
+      {% if product.on_sale %}
+      <p class="text-amber-400 font-bold text-lg">
+        ₦{{ product.sale_price|floatformat:2 }}
+      </p>
+      <p class="text-neutral-500 line-through text-sm">
+        ₦{{ product.price|floatformat:2 }}
+      </p>
+      {% else %}
+      <p class="text-amber-400 font-bold text-lg">
+        ₦{{ product.price|floatformat:2 }}
+      </p>
+      {% endif %}
+    </div>
+    <div class="flex items-center justify-between mt-2">
+      <a href="{{ product.vendor.get_absolute_url }}" class="text-xs text-neutral-400 hover:text-amber-400">
+        {{ product.vendor.shop_name }}
+      </a>
+      <div class="flex items-center gap-1">
+        <span class="text-amber-400">★</span>
+        <span class="text-neutral-400 text-xs">{{ product.rating|floatformat:1 }}/5</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+
+
+
+<article class="group bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden relative hover:shadow-2xl hover:border-amber-500/50 transition-all duration-300">
+  <!-- Product Image -->
+  <a href="{{ product.get_absolute_url }}" class="block overflow-hidden">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
+  </a>
+  
+  <!-- Badges -->
+  {% if product.is_new %}
+  <span class="absolute top-3 left-3 bg-amber-500 text-neutral-900 text-xs font-bold px-2 py-1 rounded-full">New</span>
+  {% endif %}
+  {% if product.on_sale %}
+  <span class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Sale</span>
+  {% endif %}
+  
+  <!-- Quick Actions -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <!-- Quick View -->
+    <button 
+      hx-get="{% url 'products:quick-view' product.slug %}" 
+      hx-target="                                 
+      hx-trigger="click" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Quick view"
+    >
+      👁
+    </button>
+    <!-- Add to Cart -->
+    <button 
+      hx-post="{% url 'orders:add-to-cart' product.id %}" 
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+      hx-target="#cart-content" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Add to cart"
+    >
+      🛒
+    </button>
+  </div>
+  
+  <!-- Content -->
+  <div class="p-4">
+    <a href="{{ product.get_absolute_url }}">
+      <h3 class="font-semibold text-neutral-100 line-clamp-1 group-hover:text-amber-400 transition">
+        {{ product.name }}
+      </h3>
+    </a>
+    <div class="mt-1 flex items-center gap-2">
+      {% if product.on_sale %}
+      <p class="text-amber-400 font-bold">
+        ₦{{ product.sale_price|floatformat:2 }}
+      </p>
+      <p class="text-neutral-500 line-through text-sm">
+        ₦{{ product.price|floatformat:2 }} 500
+      </p>
+      {% else %}
+      <p class="text-amber-400 font-bold">
+        ₦{{ product.price|floatformat:2 }}
+      </p>
+      {% endif %}
+    </div>
+    <a href="{{ product.vendor.get_absolute_url }}" class="text-xs text-neutral-400 hover:text-amber-400 mt-2 inline-block">
+      Sold by {{ product.vendor.shop_name }}
+    </a>
+  </div>
+</article>
+
+
+
+<article class="group bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden relative hover:shadow-2xl hover:border-amber-500/50 transition-all duration-300">
+  <!-- Product Image -->
+  <a href="{{ product.get_absolute_url }}" class="block overflow-hidden">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
+  </a>
+  
+  <!-- Badges -->
+  {% if product.is_new %}
+  <span class="absolute top-3 left-3 bg-amber-500 text-neutral-900 text-xs font-bold px-2 py-1 rounded-full">New</span>
+  {% endif %}
+  {% if product.on_sale %}
+  <span class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Sale</span>
+  {% endif %}
+  
+  <!-- Quick Actions -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <!-- Quick View -->
+    <button 
+      hx-get="{% url 'products:quick-view' product.slug %}" 
+      hx-target="                                 
+      hx-trigger="click" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Quick view"
+    >
+      👁
+    </button>
+    <!-- Add to Cart -->
+    <button 
+      hx-post="{% url 'orders:add-to-cart' product.id %}" 
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+      hx-target="#cart-content" 
+      hx-swap="innerHTML"
+      class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" 
+      aria-label="Add to cart"
+    >
+      🛒
+    </button>
+  </div>
+  
+  <!-- Content -->
+  <div class="p-4">
+    <a href="{{ product.get_absolute_url }}">
+      <h3 class="font-semibold text-neutral-100 line-clamp-1 group-hover:text-amber-400 transition">
+        {{ product.name }}
+      </h3>
+    </a>
+    <p class="text-amber-400 font-bold mt-1">
+      ₦{{ product.price|floatformat:2 }}
+      {% if product.on_sale %}
+      <span class="text-neutral-500 line-through text-sm">₦{{ product.original_price|floatformat:2 }}</span>
+      {% endif %}
+    </p>
+    <a href="{{ product.vendor.get_absolute_url }}" class="text-xs text-neutral-400 hover:text-amber-400 mt-2 inline-block">
+      Sold by {{ product.vendor.shop_name }}
+    </a>
+  </div>
+</article>
+
+
+
+
+
+<article class="group bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden relative hover:shadow-2xl hover:border-amber-500/50 transition-all duration-300">
+  <!-- Product Image (SEO link) -->
+  <a href="{{ product.get_absolute_url }}" class="block overflow-hidden">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
+  </a>
+  
+  <!-- New Badge -->
+  {% if product.is_new %}
+  <span class="absolute top-3 left-3 bg-amber-500 text-neutral-900 text-xs font-bold px-2 py-1 rounded-full">New</span>
+  {% endif %}
+  
+  <!-- Quick Actions (Hover) -->
+  <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <!-- 🔍 Quick View -->
+    <button hx-get="{% url 'products:quick-view' product.slug %}" hx-target="                                                                                                                                                                              
+      👁
+    </button>
+    <!-- 🛒 Add to Cart -->
+    <button hx-post="{% url 'orders:add-to-cart' product.id %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#cart-content" hx-swap="innerHTML" class="p-2 bg-black/70 rounded-full hover:bg-amber-500 transform hover:scale-110 transition" aria-label="Add to cart">
+      🛒
+    </button>
+  </div>
+  
+  <!-- Content -->
+  <div class="p-4">
+    <a href="{{ product.get_absolute_url }">
+      <h3 class="font-semibold text-neutral-100 line-clamp-1 group-hover:text-amber-400 transition">
+        {{ product.name }}
+      </h3>
+    </a>
+    <p class="text-amber-400 font-bold mt-1">
+      ₦{{ product.price|floatformat:2 }}
+    </p>
+    <!-- Vendor link -->
+    <a href="{{ product.vendor.get_absolute_url }}" class="text-xs text-neutral-400 hover:text-amber-400 mt-2 inline-block">
+      Sold by {{ product.vendor.shop_name }}
+    </a>
+  </div>
+</article>

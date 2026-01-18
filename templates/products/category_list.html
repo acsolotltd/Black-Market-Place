@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Afrimarket | Categories{% endblock %}
+
+{% block content %}
+<main class="pt-16 bg-neutral-950 text-neutral-100">
+
+    <section class="py-20 px-6 max-w-7xl mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+            Explore African Heritage Categories
+        </h1>
+
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6"
+             hx-get="{% url 'products:load_categories' %}"
+             hx-trigger="revealed"
+             hx-swap="innerHTML">
+            <!-- HTMX will inject category cards here -->
+        </div>
+    </section>
+
+</main>
+{% endblock %}

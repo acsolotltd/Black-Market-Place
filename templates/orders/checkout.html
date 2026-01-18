@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Afrimarket | Checkout
+{% endblock %}
+
+{% block content %}
+<main class="pt-16 bg-neutral-950 text-neutral-100">
+
+    <section class="py-16 px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-10">
+
+        <!-- Billing & Shipping Form -->
+        <div class="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-6">
+            <h2 class="text-2xl font-bold mb-4">Billing & Shipping Details</h2>
+
+            <form id="checkout-form" 
+                  hx-post="{% url 'orders:checkout_process' %}" 
+                  hx-target="#form-messages" 
+                  hx-swap="innerHTML"
+                  class="space-y-4">
+
+                <div id="form-messages"></div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-neutral-300 font-semibold">First Name</label>
+                        <input type="text" name="first_name" required
+                               class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                    </div>
+
+                    <div>
+                        <label class="block text-neutral-300 font-semibold">Last Name</label>
+                        <input type="text" name="last_name" required
+                               class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-neutral-300 font-semibold">Email</label>
+                    <input type="email" name="email" required
+                           class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                </div>
+
+                <div>
+                    <label class="block text-neutral-300 font-semibold">Address</label>
+                    <input type="text" name="address" required
+                           class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                </div>
+
+                <div>
+                    <label class="block text-neutral-300 font-semibold">City</label>
+                    <input type="text" name="city" required
+                           class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-neutral-300 font-semibold">State / Region</label>
+                        <input type="text" name="state" required
+                               class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                    </div>
+
+                    <div>
+                        <label class="block text-neutral-300 font-semibold">Postal Code</label>
+                        <input type="text" name="postal_code" required
+                               class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-neutral-300 font-semibold">Phone Number</label>
+                    <input type="text" name="phone" required
+                           class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
+                </div>
+
+                <!-- Payment Selection -->
+                <div>
+                    <label class="block text-neutral-300 font-semibold mb-2">Payment Method</label>
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="payment_method" value="paystack" checked>
+                            Paystack
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="payment_method" value="stripe">
+                            Stripe
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-amber-500 hover:bg-amber-400 text-black py-3 rounded-lg font-semibold">
+                    Place Order
+                </button>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-4 h-max">
+            <h2 class="text-2xl font-bold mb-4">Order Summary</h2>
+
+            <div id="cart-content" hx-get="{% url 'orders:cart_partial' %}" hx-trigger="load" hx-swap="innerHTML">
+                <!-- HTMX loads cart items dynamically here -->
+                <p class="text-neutral-400">Loading cart...</p>
+            </div>
+
+            <div class="flex justify-between font-semibold text-amber-400 mt-4">
+                <span>Total</span>
+                <span id="cart-total">${{ cart.total }}</span>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+{% endblock %}

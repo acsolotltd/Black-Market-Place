@@ -1,0 +1,20 @@
+{% for product in products %}
+<div class="bg-neutral-900 p-4 rounded-xl border border-neutral-800 hover:shadow-lg transition">
+    <div class="aspect-w-1 aspect-h-1 mb-4 rounded overflow-hidden">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="object-cover w-full h-full">
+    </div>
+    <h3 class="font-semibold text-amber-400">{{ product.name }}</h3>
+    <p class="text-neutral-400 mt-1">${{ product.price }}</p>
+    <button class="mt-4 w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-2 rounded"
+            @click="cartOpen = true"
+            hx-post="{% url 'orders:add-to-cart' product.id %}"
+hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            hx-target="#cart-content"
+            hx-swap="innerHTML">
+        Add to Cart
+    </button>
+</div>
+{% empty %}
+<p class="text-neutral-400 col-span-4 text-center">No featured products at the moment.</p>
+{% endfor %}
+

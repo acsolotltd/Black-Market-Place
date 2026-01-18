@@ -1,0 +1,19 @@
+<table class="w-full text-sm border border-neutral-800 rounded-xl overflow-hidden">
+  <thead class="bg-neutral-900">
+    <tr>
+      <th class="p-3 text-left">Product</th>
+      <th>Price</th>
+      <th>Stock</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for product in products %}
+      <tr id="product-{{ product.id }}">
+        {% include "accounts/vendor/partials/_product_row.html" %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

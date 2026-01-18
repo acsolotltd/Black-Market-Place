@@ -1,0 +1,42 @@
+{% if products %}
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+
+    {% for product in products %}
+      {% include "partials/_product_card.html" %}
+    {% endfor %}
+
+  </div>
+{% else %}
+  <p class="text-neutral-400 mt-6">No products found.</p>
+{% endif %}
+
+<!-- Pagination -->
+{% if is_paginated %}
+  <div class="mt-8 flex items-center justify-center gap-3 text-sm">
+
+    {% if page_obj.has_previous %}
+      <a hx-get="?page={{ page_obj.previous_page_number }}"
+         hx-target="#products-container"
+         hx-swap="innerHTML"
+         href="?page={{ page_obj.previous_page_number }}"
+         class="px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700">
+        ← Previous
+      </a>
+    {% endif %}
+
+    <span class="text-neutral-400">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+      <a hx-get="?page={{ page_obj.next_page_number }}"
+         hx-target="#products-container"
+         hx-swap="innerHTML"
+         href="?page={{ page_obj.next_page_number }}"
+         class="px-3 py-1 rounded bg-neutral-800 hover:bg-neutral-700">
+        Next →
+      </a>
+    {% endif %}
+
+  </div>
+{% endif %}

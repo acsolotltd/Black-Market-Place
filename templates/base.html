@@ -1,0 +1,306 @@
+{% load static django_htmx %}
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" x-data="{ mobileMenu:false, cartOpen:false, searchOpen:false, authOpen:false }">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Afrimarket{% endblock %}</title>
+    {% tailwind_css %}
+    {% htmx_script %}
+    <script defer src="{% static 'cdn.min.js' %}" >
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+
+    <!-- Theme Switcher Alpine.js -->
+<script defer >
+function themeSwitcher() {
+    return {                                              theme: localStorage.getItem('theme') || '>        init() { this.applyTheme(); },
+        toggleTheme() { this.theme = (this.theme=>
+        applyTheme() { if(this.theme==='dark'){do>
+    }                                             }
+</script>
+
+
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-neutral-950 text-neutral-100 antialiased">
+
+<!-- ===== Toast Notification ===== -->
+<div x-data="{ show:false, message:'' }"
+     x-init="document.body.addEventListener('htmx:afterOnLoad', e => {
+        const val = e.detail?.xhr?.getResponseHeader && e.detail.xhr.getResponseHeader('HX-Trigger-After');
+        if(val){ message = val + ' added to cart!'; show=true; setTimeout(()=> show=false, 2600); }
+     })"
+     x-show="show" x-transition.opacity.duration.300ms
+     class="fixed bottom-5 right-5 bg-amber-500 text-black px-4 py-2 rounded-lg shadow-lg z-50 hidden"
+     x-bind:class="{ 'block': show }">
+    <span x-text="message"></span>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="bg-neutral-900 fixed w-full z-50 border-b border-neutral-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div class="flex justify-between h-16 items-center">
+
+            <!-- Logo -->
+            <a href="{% url 'core:landing' %}" class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-md bg-amber-400 flex items-center justify-center font-bold text-neutral-900">A</span>
+                <span class="text-lg font-semibold text-neutral-100">Afrimart</span>
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="{% url 'products:all-products' %}" class="hover:text-amber-400">Products</a>
+                <a href="{#% url 'core:about' %}" class="hover:text-amber-400">About</a>
+                <a href="{#% url 'core:contact' %}" class="hover:text-amber-400">Contact</a>
+
+                <!-- Search -->
+                <button @click="searchOpen=true" aria-label="Search" class="p-2 rounded hover:bg-neutral-800">
+                    <svg class="w-5 h-5 text-neutral-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/>
+                    </svg>
+                </button>
+
+                <!-- Cart -->
+                <button @click="cartOpen=true" aria-label="Cart" class="p-2 rounded hover:bg-neutral-800 relative">
+                    <svg class="w-5 h-5 text-neutral-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 7h14l-2-7M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm6 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                    </svg>
+                    {% if cart_count %}
+                        <span class="absolute -top-1 -right-1 bg-amber-400 text-black text-xs px-1 rounded-full">{{ cart_count }}</span>
+                    {% endif %}
+                </button>
+
+                <!-- Sell CTA -->
+                {% if request.user.is_authenticated and request.user.vendor_profile %}
+                    <a href="{{ request.user.vendor_profile.get_absolute_url }}" class="ml-2 px-3 py-1 rounded-md bg-amber-500 text-black hover:bg-amber-400 text-sm font-semibold">My Shop</a>
+                {% else %}
+                    <a href="{% url 'accounts:vendor-register' %}" class="ml-2 px-3 py-1 rounded-md bg-amber-500 text-black hover:bg-amber-400 text-sm font-semibold">Sell</a>
+                {% endif %}
+
+                <!-- Auth Dropdown -->
+                <div class="relative ml-3" x-data="{ open:false }">
+                    {% if request.user.is_authenticated %}
+                        <button @click="open=!open" class="flex items-center gap-2 px-3 py-1 rounded hover:bg-neutral-800">
+                            <svg class="w-6 h-6 rounded-full bg-neutral-800 p-1 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.5 19a7 7 0 0 1 13 0"/>
+                                <circle cx="12" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                            </svg>
+                            <span class="text-sm">{{ request.user.nick|default:request.user.get_short_name }}</span>
+                            <svg class="w-3 h-3 text-neutral-300" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M5.23 7.21a.75.75 0 011.06-.02L10 10.67l3.71-3.48a.75.75 0 111.04 1.08l-4.24 3.98a.75.75 0 01-1.04 0L5.25 8.27a.75.75 0 01-.02-1.06z"/>
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open=false" x-transition class="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
+                            <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 hover:bg-neutral-800">Profile</a>
+                            {% if request.user.vendor_profile %}
+                                <a href="{{ request.user.vendor_profile.get_absolute_url }}" class="block px-4 py-2 hover:bg-neutral-800">Vendor Profile</a>
+                            {% endif %}
+                            <a href="{#% url 'accounts:change-password' %}" class="block px-4 py-2 hover:bg-neutral-800">Change Password</a>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Logout</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <button @click="authOpen=!authOpen" class="ml-2 px-3 py-1 rounded-md bg-amber-500 text-black hover:bg-amber-400 text-sm font-semibold">Login</button>
+                        <div x-show="authOpen" @click.away="authOpen=false" x-transition class="absolute right-0 mt-2 w-72 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
+                            <div class="flex flex-col">
+                                <button hx-get="{% url 'accounts:login' %}" hx-target="#auth-dropdown-content" hx-swap="innerHTML" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Login</button>
+                                <button hx-get="{% url 'accounts:register' %}" hx-target="#auth-dropdown-content" hx-swap="innerHTML" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Sign Up</button>
+                                <button hx-get="{#% url 'accounts:password-reset' %}" hx-target="#auth-dropdown-content" hx-swap="innerHTML" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Forgot Password</button>
+                                <div id="auth-dropdown-content" class="px-4 py-3 text-sm text-neutral-300">Choose an action above</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Theme Switcher -->
+                <div x-data="themeSwitcher()" class="ml-3">
+                    <button @click="toggleTheme()" class="p-2 rounded hover:bg-neutral-800 flex items-center gap-2">
+                        <span x-show="theme==='light'" class="text-yellow-400">☀️</span>
+                        <span x-show="theme==='dark'" class="text-gray-300">🌙</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden flex items-center">
+
+
+		<!-- Auth Dropdown -->
+                <div class="relative ml-3" x-data="{ open:false }">
+                    {% if request.user.is_authenticated %}
+                        <button @click="open=!open" class="flex items-center gap-2 px-3 py-1 rounded hover:bg-neutral-800">
+                            <svg class="w-6 h-6 rounded-full bg-neutral-800 p-1 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.5 19a7 7 0 0 1 13 0"/>
+                                <circle cx="12" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                            </svg>
+                            <span class="text-sm">{{ request.user.nick|default:request.user.get_short_name }}</span>
+                            <svg class="w-3 h-3 text-neutral-300" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M5.23 7.21a.75.75 0 011.06-.02L10 10.67l3.71-3.48a.75.75 0 111.04 1.08l-4.24 3.98a.75.75 0 01-1.04 0L5.25 8.27a.75.75 0 01-.02-1.06z"/>
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open=false" x-transition class="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
+                            <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 hover:bg-neutral-800">Profile</a>
+                            {% if request.user.vendor_profile %}
+                                <a href="{{ request.user.vendor_profile.get_absolute_url }}" class="block px-4 py-2 hover:bg-neutral-800">Vendor Profile</a>
+                            {% endif %}
+                            <a href="{#% url 'accounts:change-password' %}" class="block px-4 py-2 hover:bg-neutral-800">Change Password</a>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Logout</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <button @click="authOpen=!authOpen" class="ml-2 px-3 py-1 rounded-md bg-amber-500 text-black hover:bg-amber-400 text-sm font-semibold">Login</button>
+                        <div x-show="authOpen" @click.away="authOpen=false" x-transition class="absolute right-0 mt-2 w-72 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
+                            <div class="flex flex-col">
+                                <button hx-get="{% url 'accounts:login' %}" hx-target="#auth-dropdown-content" hx-swap="innerHTML" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Login</button>
+                                <button hx-get="{% url 'accounts:register' %}" hx-target="#auth-dropdown-content" hx-swap="innerHTML" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Sign Up</button>
+                                <button hx-get="{#% url 'accounts:password-reset' %}" hx-target="#auth-dropdown-content" hx-swap="innerHTML" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Forgot Password</button>
+                                <div id="auth-dropdown-content" class="px-4 py-3 text-sm text-neutral-300">Choose an action above</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+		
+		<!-- Search -->
+                <button @click="searchOpen=true" aria-label="Search" class="p-2 rounded hover:bg-neutral-800">
+                    <svg class="w-5 h-5 text-neutral-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/>
+                    </svg>
+                </button>
+
+                <button @click="mobileMenu=!mobileMenu" class="p-2 rounded hover:bg-neutral-800">
+                    <svg x-show="!mobileMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg x-show="mobileMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="mobileMenu" x-transition class="md:hidden bg-neutral-900 border-t border-neutral-800">
+	    <a href="{% url 'core:landing' %}" class="block px-4 py-2 hover:bg-neutral-800">Home</a>        
+	<a href="{% url 'products:all-products' %}" class="block px-4 py-2 hover:bg-neutral-800">Products</a>
+	<a href="{#% url 'core:about' %}" class="block px-4 py-2 hover:bg-neutral-800">About</a>
+        <a href="{#% url 'core:contact' %}" class="block px-4 py-2 hover:bg-neutral-800">Contact</a>
+
+	<!-- Cart -->
+                <a  @click="cartOpen=true" aria-label="Cart" class="block px-4 py-2 hover:bg-neutral-800" >  
+		Cart
+                    {% if cart_count %}
+                        <span class="absolute -top-1 -right-1 bg-amber-400 text-black text-xs px-1 rounded-full">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+               
+	<!-- Sell CTA -->
+                {% if request.user.is_authenticated and request.user.vendor_profile %}
+                    <a href="{{ request.user.vendor_profile.get_absolute_url }}" class="px-4 py-2 my-2 rounded-md bg-amber-500 text-black hover:bg-amber-400 text-sm font-semibold">My Shop</a>
+                {% else %}
+                    <a href="{% url 'accounts:vendor-register' %}" class="px-3 py-1 mx-4 my-2 rounded-md bg-amber-500 text-black hover:bg-amber-400 text-sm font-semibold">Sell</a>
+                {% endif %}
+
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class=".pt-20">{% block content %}{% endblock %}</div>
+
+<!-- Cart Drawer -->
+<div x-show="cartOpen" x-transition class="fixed inset-y-0 right-0 w-80 bg-neutral-900 shadow-lg z-50 overflow-y-auto">
+    <div class="p-4 flex justify-between items-center border-b border-neutral-800">
+        <h3 class="text-lg font-semibold">Your Cart</h3>
+        <button @click="cartOpen=false" class="text-neutral-400 hover:text-neutral-200">&times;</button>
+    </div>
+    <div id="cart-content" class="p-4" hx-get="{% url 'orders:cart-items' %}" hx-trigger="load" hx-swap="innerHTML">
+        <p class="text-neutral-500">Loading cart...</p>
+    </div>
+</div>
+
+<!-- Search Modal -->
+<div x-show="searchOpen" x-transition class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-start justify-center p-4">
+    <div @click.away="searchOpen=false" class="mt-20 w-full max-w-xl bg-neutral-900 rounded-lg shadow-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+            <h4 class="text-lg font-semibold">Search products</h4>
+            <button @click="searchOpen=false" class="text-neutral-400 hover:text-neutral-200">&times;</button>
+        </div>
+        <input type="search" name="q" placeholder="Search beads, medicine, sculptures..."
+               class="w-full px-4 py-2 rounded-md bg-neutral-800 border border-neutral-700 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+               hx-get="{% url 'products:search-products' %}" hx-trigger="keyup changed delay:300ms" hx-target="#search-results" hx-swap="innerHTML">
+        <div id="search-results" class="mt-3 text-sm text-neutral-300">Start typing to search...</div>
+    </div>
+</div>
+
+<!-- Quick View Modal -->
+<!-- Quick View Modal -->
+<div id="quickview-modal"
+     class="fixed inset-0 z-50 hidden">
+
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+       onclick="document.getElementById('quickview-modal').classList.add('hidden')">
+  </div>
+
+  <!-- Modal Container -->
+  <div class="relative flex items-center justify-center min-h-screen p-4">
+    <div class="relative w-full max-w-3xl bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-800">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
+        <h3 class="text-lg font-semibold text-neutral-100">Product Preview</h3>
+        <button onclick="closeQuickView()" class="text-neutral-400 hover:text-amber-400">
+          ✕
+        </button>
+      </div>
+
+      <!-- Injected Content -->
+      <div id="quickview-content" class="p-6">
+        <!-- HTMX injects here -->
+      </div>
+
+    </div>
+  </div>
+</div>
+
+ 
+
+     
+
+<script defer src="{% static 'cdn.min.js' %}" >
+    <script defer src="{% static 'chart.js' %}" >
+
+
+<!-- Theme Switcher Alpine.js -->
+<script defer >
+function themeSwitcher() {
+    return {
+        theme: localStorage.getItem('theme') || 'light',
+        init() { this.applyTheme(); },
+        toggleTheme() { this.theme = (this.theme==='light'?'dark':'light'); localStorage.setItem('theme', this.theme); this.applyTheme(); },
+        applyTheme() { if(this.theme==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');} }
+    }
+}
+</script>
+
+
+<script>
+  function openQuickView() {
+    document.getElementById('quickview-modal').classList.remove('hidden');
+  }
+
+  function closeQuickView() {
+    document.getElementById('quickview-modal').classList.add('hidden');
+  }
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

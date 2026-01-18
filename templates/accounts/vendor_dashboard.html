@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Afrimarket | Vendor Dashboard
+{% endblock %}
+
+{% block content %}
+<main class="pt-16 bg-neutral-950 text-neutral-100 min-h-screen">
+
+    <section class="py-16 px-6 max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+
+        <!-- Sidebar / Navigation -->
+        <aside class="md:col-span-1 bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-6">
+            <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
+
+            <ul class="space-y-2">
+                <li><a href="#products" class="hover:text-amber-400 block">Manage Products</a></li>
+                <li><a href="#orders" class="hover:text-amber-400 block">Orders & Sales</a></li>
+                <li><a href="#analytics" class="hover:text-amber-400 block">Analytics</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Dashboard Content -->
+        <div class="md:col-span-2 space-y-12">
+
+            <!-- Products Management -->
+            <section id="products" class="bg-neutral-900 p-6 rounded-xl border border-neutral-800">
+                <h3 class="text-xl font-bold mb-4">Manage Products</h3>
+<a href="{% url 'accounts:add_product' %}" >Add product </a>
+                <button @click="showAddProduct = !showAddProduct" class="mb-4 bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded">
+                    Add New Product
+                </button>
+
+                <div x-data="{ showAddProduct: false }" x-show="showAddProduct" class="mb-6 space-y-4">
+                    <form hx-post="{% url 'accounts:add_product' %}" hx-target="#product-list" hx-swap="beforeend" class="space-y-3">
+                        <input type="text" name="name" placeholder="Product Name" class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" required>
+                        <input type="number" name="price" placeholder="Price" class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" required>
+                        <input type="text" name="category" placeholder="Category" class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" required>
+                        <textarea name="description" placeholder="Description" class="w-full px-3 py-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100"></textarea>
+                        <input type="file" name="image" class="w-full text-neutral-100">
+                        <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded">Add Product</button>
+                    </form>
+                </div>
+
+                <div id="product-list" class="space-y-4 mt-4">
+                    {% for product in vendor_products %}
+                    <div class="flex justify-between items-center bg-neutral-800 p-4 rounded border border-neutral-700">
+                        <div>
+                            <h4 class="font-semibold text-amber-400">{{ product.name }}</h4>
+                            <p class="text-neutral-400">${{ product.price }}</p>
+                        </div>
+                        <a href="{% url 'products:product_update' product.id %}" class="text-amber-400 hover:underline">Edit</a>
+                    </div>
+                    {% empty %}
+                    <p class="text-neutral-400">No products added yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Orders & Sales -->
+            <section id="orders" class="bg-neutral-900 p-6 rounded-xl border border-neutral-800">
+                <h3 class="text-xl font-bold mb-4">Orders & Sales</h3>
+
+                <div class="space-y-4">
+                    {% for order in orders %}
+                    <div class="flex justify-between items-center bg-neutral-800 p-4 rounded border border-neutral-700">
+                        <div>
+                            <p class="font-semibold text-amber-400">Order #{{ order.id }}</p>
+                            <p class="text-neutral-400">Customer: {{ order.user.full_name }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-neutral-400">Items: {{ order.items.count }}</p>
+                            <p class="font-semibold text-amber-400">Total: ${{ order.total }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-neutral-400">No orders yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Analytics -->
+	    <section id="analytics" class="bg-neutral-900 p-6 rounded-xl border border-neutral-800">
+    <h3 class="text-xl font-bold mb-4">Analytics Overview</h3>
+
+    <div x-data="salesAnalytics({{ sales_data|safe }})" class="space-y-6">
+        <canvas id="salesChart" class="w-full h-64"></canvas>
+
+        <div>
+            <h4 class="font-semibold text-amber-400 mb-2">Top Products</h4>
+            <ul class="list-disc list-inside text-neutral-400">
+                <template x-for="item in topProducts" :key="item.name">
+                    <li x-text="`${item.name} — ${item.sales} sold`"></li>
+                </template>
+            </ul>
+        </div>
+    </div>
+</section>
+
+            <section id="analytics" class="bg-neutral-900 p-6 rounded-xl border border-neutral-800">
+                <h3 class="text-xl font-bold mb-4">Analytics Overview</h3>
+                <div id="analytics-chart" class="w-full h-64">
+                    <!-- Placeholder for Alpine/Recharts chart -->
+                    <p class="text-neutral-400">Chart coming soon...</p>
+                </div>
+            </section>
+
+        </div>
+    </section>
+
+</main>
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('salesAnalytics', (data) => ({
+        chart: null,
+        salesData: data.daily_sales,   // e.g., [{date: '2025-12-01', total: 200}, ...]
+        topProducts: data.top_products, // e.g., [{name: 'Beads', sales: 50}, ...]
+        init() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            this.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: this.salesData.map(d => d.date),
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: this.salesData.map(d => d.total),
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)', // amber-400
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: { 
+                            grid: { color: 'rgba(255,255,255,0.05)' }, 
+                            ticks: { color: '#fef3c7' } 
+                        },
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.05)' }, 
+                            ticks: { color: '#fef3c7' } 
+                        }
+                    }
+                }
+            });
+        }
+    }));
+});
+</script>
+
+{% endblock %}

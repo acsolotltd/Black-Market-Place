@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}All Products | Afrimarket{% endblock %}
+
+{% block content %}
+<div class="pt-24 max-w-7xl mx-auto px-6">
+
+  <!-- Page heading -->
+  <h1 class="text-3xl font-bold text-amber-400 mb-6">
+    All Products
+  </h1>
+
+  <!-- Products + Pagination Wrapper (HTMX target) -->
+  <div id="products-container"
+       hx-get="{% url 'products:all-products' %}"
+       hx-trigger="load"
+       hx-target="this"
+       hx-swap="innerHTML">
+
+    {% include "products/partials/_product_list.html" %}
+
+  </div>
+
+</div>
+{% endblock %}

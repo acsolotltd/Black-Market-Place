@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+{% load django_htmx %}
+{% load static tailwind_tags %}
+<html lang="en" x-data="{ mobileMenu: false, cartOpen: false, searchOpen: false }">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Afrimarket{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    {% tailwind_css %}
+    {% htmx_script %}
+</head>
+<body class="bg-neutral-950 text-neutral-100">
+
+<!-- Toast Notification -->
+<div x-data="{ show: false, message: '' }"
+     x-init="document.body.addEventListener('htmx:afterOnLoad', (e) => {
+         const header = e.detail.xhr.getResponseHeader('HX-Trigger-After');
+         if(header){
+             message = header + ' added to cart!';
+             show = true;
+             setTimeout(() => show = false, 2500);
+         }
+     })"
+     x-show="show"
+     x-transition.opacity.duration.300ms
+     class="fixed bottom-5 right-5 bg-amber-500 text-black px-5 py-3 rounded-lg shadow-lg z-50">
+    <span x-text="message"></span>
+</div>
+<!-- Navbar -->
+<nav class="bg-neutral-900 fixed w-full z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="{% url 'core:landing' %}" class="text-xl font-bold text-indigo-500">Afrimarket</a>
+            </div>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex space-x-6 items-center">
+
+                <a href="{% url 'products:all-products' %}" class="hover:text-indigo-400">Products</a>
+                <a href="#about" class="hover:text-indigo-400">About</a>
+                <a href="#contact" class="hover:text-indigo-400">Contact</a>
+                
+                <button @click="searchOpen = true" class="hover:text-indigo-400">Search</button>
+                <button @click="cartOpen = true" class="hover:text-indigo-400">🛒 Cart</button>
+
+                <!-- User Authentication -->
+                {% if request.user.is_authenticated %}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="flex items-center gap-2 hover:text-indigo-400 focus:outline-none">
+                            {{ request.user.username }}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        <div x-show="open" @click.away="open = false"
+                             x-transition class="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
+                            <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-neutral-100 hover:bg-neutral-800">Profile</a>
+                            
+                            {% if request.user.vendor_profile %}
+                                <a href="{{ request.user.vendor_profile.get_absolute_url }}" class="block px-4 py-2 text-neutral-100 hover:bg-neutral-800">
+                                    Vendor Profile
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{#% url 'accounts:change-password' %}" class="block px-4 py-2 text-neutral-100 hover:bg-neutral-800">
+                                Change Password
+                            </a>
+                            <form method="post" action="{#% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full text-left px-4 py-2 text-neutral-100 hover:bg-neutral-800">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="px-4 py-2 bg-amber-500 text-black rounded-xl font-semibold hover:bg-amber-400">
+                        Login
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="md:hidden">
+                <button @click="mobileMenu = !mobileMenu" class="focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path :class="{'hidden': mobileMenu, 'inline-flex': !mobileMenu }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path :class="{'inline-flex': mobileMenu, 'hidden': !mobileMenu }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="mobileMenu" x-transition class="md:hidden bg-neutral-900 shadow-md space-y-1">
+        <a href="{% url 'products:all-products' %}" class="block px-4 py-2 hover:bg-neutral-800">Products</a>
+        <a href="#about" class="block px-4 py-2 hover:bg-neutral-800">About</a>
+        <a href="#contact" class="block px-4 py-2 hover:bg-neutral-800">Contact</a>
+        <button @click="searchOpen = true" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Search</button>
+        <button @click="cartOpen = true" class="w-full text-left px-4 py-2 hover:bg-neutral-800">🛒 Cart</button>
+
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 hover:bg-neutral-800">Profile</a>
+            {% if request.user.vendor_profile %}
+                <a href="{{ request.user.vendor_profile.get_absolute_url }}" class="block px-4 py-2 hover:bg-neutral-800">Vendor Profile</a>
+            {% endif %}
+            <a href="{#% url 'accounts:change-password' %}" class="block px-4 py-2 hover:bg-neutral-800">Change Password</a>
+            <form method="post" action="{#% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-neutral-800">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="block px-4 py-2 bg-amber-500 text-black rounded-xl text-center font-semibold hover:bg-amber-400">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="bg-neutral-900 fixed w-full z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="{% url 'core:landing' %}" class="text-xl font-bold text-amber-400">Afrimarket</a>
+            </div>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#featured-products" class="hover:text-amber-400 flex items-center gap-1">🛍 Products</a>
+                <a href="#vendors" class="hover:text-amber-400 flex items-center gap-1">🤝 Vendors</a>
+                <a href="#trust" class="hover:text-amber-400 flex items-center gap-1">✔ Trust</a>
+                <button @click="searchOpen = true" class="hover:text-amber-400 flex items-center gap-1">🔍 Search</button>
+                <button @click="cartOpen = true" class="hover:text-amber-400 flex items-center gap-1">🛒 Cart</button>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="md:hidden">
+                <button @click="mobileMenu = !mobileMenu" class="focus:outline-none" aria-label="Toggle menu">
+                    <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path :class="{'hidden': mobileMenu, 'inline-flex': !mobileMenu }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path :class="{'inline-flex': mobileMenu, 'hidden': !mobileMenu }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="mobileMenu" x-transition class="md:hidden bg-neutral-900 shadow-md">
+        <a href="#featured-products" class="block px-4 py-2 hover:bg-neutral-800">🛍 Products</a>
+        <a href="#vendors" class="block px-4 py-2 hover:bg-neutral-800">🤝 Vendors</a>
+        <a href="#trust" class="block px-4 py-2 hover:bg-neutral-800">✔ Trust</a>
+        <button @click="searchOpen = true" class="w-full text-left px-4 py-2 hover:bg-neutral-800">🔍 Search</button>
+        <button @click="cartOpen = true" class="w-full text-left px-4 py-2 hover:bg-neutral-800">🛒 Cart</button>
+    </div>
+</nav>
+
+<!-- ================= CART DRAWER ================= -->
+<div x-show="cartOpen"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+     x-transition:leave="transition ease-in duration-300"
+     x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
+     class="fixed top-0 right-0 h-full w-80 bg-neutral-900 shadow-lg z-50 overflow-y-auto">
+
+    <div class="p-4 flex justify-between items-center border-b border-neutral-700">
+        <h2 class="text-lg font-semibold">Your Cart</h2>
+        <button @click="cartOpen = false" class="text-gray-400 hover:text-gray-200">&times;</button>
+    </div>
+
+    <div class="p-4" id="cart-content"
+         hx-get="{% url 'orders:cart-items' %}"
+         hx-trigger="load"
+         hx-target="#cart-content"
+         hx-swap="innerHTML">
+        <p class="text-gray-400">Loading your cart...</p>
+    </div>
+</div>
+
+<!-- ================= SEARCH MODAL ================= -->
+<div x-show="searchOpen" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div @click.away="searchOpen = false" class="bg-neutral-900 w-full max-w-md p-6 rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Search Products</h2>
+            <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-200">&times;</button>
+        </div>
+        <input type="text" placeholder="Search for beads, medicines, sculptures..."
+               class="w-full border border-neutral-700 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+               hx-get="{% url 'products:search-products' %}"
+               hx-trigger="keyup changed delay:300ms"
+               hx-target="#search-results"
+               hx-swap="innerHTML">
+        <div id="search-results" class="mt-4 text-neutral-400">
+            Start typing to see products...
+        </div>
+    </div>
+</div>
+
+{% block content %}{% endblock %}
+
+<!-- Alpine.js CDN -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+</body>
+</html>

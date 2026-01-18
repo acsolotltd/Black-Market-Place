@@ -1,0 +1,8 @@
+.env/
+*.env/
+.env/
+.venv/
+*.pyc/
+*.sqlite3
+afrimarket_cache
+__pycache__

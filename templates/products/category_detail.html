@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ category.name }} | Afrimarket{% endblock %}
+
+{% block content %}
+<main class=".pt-20 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  
+    <!-- CATEGORIES (primary navigation) -->
+<section id="categories" class="py-12 px-6 bg-black">      
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-6">Browse by Category</h2>
+      <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4"
+           hx-get="{% url 'core:explore_preview' %}"
+           hx-trigger="revealed"
+           hx-swap="innerHTML"
+           aria-live="polite">
+        <!-- category cards injected by HTMX -->
+        <noscript>
+          <!-- fallback: server-rendered categori-->
+        </noscript>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="flex flex-col lg:flex-row gap-8">
+    <!-- SIDEBAR (desktop) -->
+    <aside class="w-full lg:w-72 hidden lg:block">
+      <div hx-get="{% url 'products:category-filters-partial' category.slug %}"
+           hx-trigger="load"
+           hx-swap="innerHTML">
+        <!-- filters will be injected -->
+        <div class="p-4 text-neutral-500">Loading filters...</div>
+      </div>
+    </aside>
+
+    <!-- MAIN COLUMN -->
+    <section class="flex-1">
+      <!-- heading + mobile filters button -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-neutral-100">{{ category.name }}</h1>
+          <p class="text-neutral-400 text-sm mt-1">{{ category.description }}</p>
+        </div>
+
+        <!-- Mobile filter trigger -->
+        <div class="lg:hidden">
+          <button @click="document.getElementById('mobile-filters').classList.toggle('hidden')"
+                  class="px-3 py-2 rounded bg-neutral-800 text-neutral-100">Filters</button>
+        </div>
+      </div>
+
+      <!-- MOBILE FILTERS (collapsible) -->
+      <div id="mobile-filters" class="mb-4 lg:hidden hidden">
+        <div hx-get="{% url 'products:category-filters-partial' category.slug %}"
+             hx-swap="innerHTML">
+           <!-- mobile filters loaded here -->
+        </div>
+      </div>
+
+      <!-- Sorting controls (inline) -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <label class="text-sm text-neutral-300">Sort</label>
+          <select id="sort-select" name="sort"
+                  class="bg-neutral-800 text-neutral-100 px-3 py-2 rounded"
+                  hx-vals='{}'
+                  hx-get="{% url 'products:category-products-htmx' category.slug %}"
+                  hx-target="#product-list"
+                  hx-push-url="true"
+                  hx-trigger="change delay:300ms">
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: Low → High</option>
+            <option value="price_desc">Price: High → Low</option>
+            <option value="popularity">Popularity</option>
+          </select>
+        </div>
+
+        <div class="text-sm text-neutral-400">
+          Showing <span id="product-count">—</span>
+        </div>
+      </div>
+
+      <!-- Product grid (HTMX target) -->
+      <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+           hx-get="{% url 'products:category-products-htmx' category.slug %}"
+           hx-trigger="revealed"
+           hx-swap="innerHTML">
+        <!-- initial placeholder -->
+        <div class="col-span-full text-center text-neutral-500 py-12">Loading products…</div>
+      </div>
+
+      <!-- "Load more" (progressive) -->
+      <div id="load-more-area" class="mt-6 text-center">
+        <button id="load-more-btn" class="px-4 py-2 rounded bg-amber-500 text-black hover:bg-amber-400"
+                hx-get="{% url 'products:category-products-htmx' category.slug %}?page=2"
+                hx-target="#product-list"
+                hx-swap="afterend"
+                hx-push-url="true">
+          Load more
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,45 @@
+<td class="p-3 font-medium">{{ product.name }}</td>
+
+<td>
+  <form
+    hx-post="{% url 'accounts:update_price' product.id %}"
+    hx-trigger="change"
+    hx-target="#product-{{ product.id }}"
+    hx-swap="outerHTML"
+  >
+    <input
+      type="number"
+      step="0.01"
+      name="price"
+      value="{{ product.price }}"
+      class="bg-neutral-900 border border-neutral-700 rounded px-2 w-20"
+    />
+  </form>
+</td>
+
+<td>
+  <form
+    hx-post="{% url 'accounts:update_stock' product.id %}"
+    hx-trigger="change"
+    hx-target="#product-{{ product.id }}"
+    hx-swap="outerHTML"
+  >
+    <input
+      type="number"
+      name="stock"
+      value="{{ product.stock }}"
+      class="bg-neutral-900 border border-neutral-700 rounded px-2 w-16"
+    />
+  </form>
+</td>
+
+<td>
+  <button
+    hx-post="{% url 'accounts:toggle_product' product.id %}"
+    hx-target="#product-{{ product.id }}"
+    hx-swap="outerHTML"
+    class="text-amber-400"
+  >
+    {% if product.is_active %}Active{% else %}Hidden{% endif %}
+  </button>
+</td>

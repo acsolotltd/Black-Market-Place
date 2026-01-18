@@ -1,0 +1,19 @@
+{% for item in cart.items.all %}
+<div class="flex justify-between items-center border-b border-neutral-700 py-2">
+    <span>{{ item.quantity }} x {{ item.product.name }}</span>
+    <span>${{ item.quantity|mul:item.product.price }}</span>
+</div>
+{% empty %}
+<p class="text-neutral-400">Your cart is empty.</p>
+{% endfor %}
+
+
+
+{% for item in cart.items.all %}
+<div class="flex justify-between items-center border-b border-neutral-700 py-2">
+    <span>{{ item.quantity }} x {{ item.product.name }}</span>
+    <span>${{ item.quantity|mul:item.product.price }}</span>
+</div>
+{% empty %}
+<p class="text-neutral-400">Your cart is empty.</p>
+{% endfor %}

@@ -1,0 +1,33 @@
+{% for product in products %}
+<div class="bg-neutral-900 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+  <a href="{{ product.get_absolute_url }}" class="block">
+    <div class="w-full h-48 bg-neutral-800 overflow-hidden">
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="object-cover w-full h-full">
+    </div>
+    <div class="p-3">
+      <h3 class="text-sm font-semibold text-neutral-100 line-clamp-2">{{ product.name }}</h3>
+      <p class="text-amber-400 font-bold mt-1">${{ product.price }}</p>
+      <p class="text-neutral-400 text-xs mt-2">{{ product.vendor.shop_name }}</p>
+    </div>
+  </a>
+  <div class="p-3 border-t border-neutral-800">
+    <button hx-post="{% url 'orders:add-to-cart' product.id %}" hx-target="#cart-content" hx-swap="innerHTML"
+            class="w-full px-3 py-2 rounded bg-amber-500 text-black hover:bg-amber-400 font-semibold">
+      🛒 Add to cart
+    </button>
+  </div>
+</div>
+{% empty %}
+<div class="col-span-full text-center text-neutral-500 py-8">No products match your filters.</div>
+{% endfor %}
+
+{# update product count via JS or simple element replacement #}
+<script>
+  (function(){
+    const countElement = document.getElementById('product-count');
+    if (countElement) {
+      const total = {{ total }};
+      countElement.textContent = total;
+    }
+  })();
+</script>

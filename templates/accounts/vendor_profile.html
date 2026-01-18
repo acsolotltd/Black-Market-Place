@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ vendor.shop_name }} | Afrimarket{% endblock %}
+
+{% block content %}
+<div class="pt-24 bg-neutral-950 min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+
+        <!-- ================= Vendor Header ================= -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12">
+            <div class="flex items-center gap-4">
+                <!-- Vendor Logo Placeholder -->
+                <div class="w-20 h-20 bg-neutral-800 rounded-full flex items-center justify-center text-amber-400 font-bold text-2xl">
+                    {{ vendor.shop_name|slice:":1" }}
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-amber-400">{{ vendor.shop_name }}</h1>
+                    <p class="text-neutral-400">{{ vendor.description|default:"No description yet." }}</p>
+                    <p class="text-sm text-neutral-500 mt-1">{{ vendor.products.count }} Products</p>
+                </div>
+            </div>
+
+            <!-- Vendor Actions (Only visible to vendor themselves) -->
+            {% if request.user == vendor.user %}
+            <div class="flex gap-4 mt-4 md:mt-0">
+                <a href="{% url 'vendor:dashboard' %}" class="px-4 py-2 bg-amber-500 text-black rounded-xl font-semibold hover:bg-amber-400 transition">
+                    Dashboard
+                </a>
+                <a href="{% url 'vendor:add-product' %}" class="px-4 py-2 bg-neutral-800 text-amber-400 rounded-xl font-semibold hover:bg-neutral-700 transition">
+                    Add Product
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ================= Vendor Stats ================= -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 text-center">
+            <div>
+                <p class="text-2xl font-bold text-amber-400">{{ vendor.products.count }}</p>
+                <p class="text-neutral-400 text-sm">Products</p>
+            </div>
+            <div>
+                <p class="text-2xl font-bold text-amber-400">{{ vendor.orders.count }}</p>
+                <p class="text-neutral-400 text-sm">Orders</p>
+            </div>
+            <div>
+                <p class="text-2xl font-bold text-amber-400">{{ vendor.rating|default:"0" }}</p>
+                <p class="text-neutral-400 text-sm">Avg Rating</p>
+            </div>
+            <div>
+                <p class="text-2xl font-bold text-amber-400">{{ vendor.followers.count }}</p>
+                <p class="text-neutral-400 text-sm">Followers</p>
+            </div>
+        </div>
+
+        <!-- ================= Product Listing ================= -->
+        <section>
+            <h2 class="text-2xl font-bold text-amber-400 mb-6">Products</h2>
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                 hx-get="{% url 'vendor:products-preview' vendor.slug %}"
+                 hx-trigger="revealed"
+                 hx-swap="innerHTML">
+                <!-- HTMX will inject vendor product cards here -->
+            </div>
+        </section>
+
+        <!-- ================= Vendor Reviews ================= -->
+        <section class="mt-16">
+            <h2 class="text-2xl font-bold text-amber-400 mb-6">Reviews</h2>
+            <div hx-get="{% url 'vendor:reviews-preview' vendor.slug %}"
+                 hx-trigger="revealed"
+                 hx-swap="innerHTML"
+                 class="space-y-4 text-neutral-300">
+                <!-- HTMX loads reviews -->
+                <p class="text-neutral-500">Loading reviews...</p>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+

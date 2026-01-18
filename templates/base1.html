@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% load django_htmx %}             {% load static tailwind_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover and shop authentic African traditional products: medicine, beads, sculptures and more.">
+    <meta name="keywords" content="African, e-commerce, traditional, medicine, beads, sculptures, crafts">
+    <meta name="author" content="Your Company Name">
+    <title>{% block title %}African Traditions Marketplace{% endblock %}</title>
+
+
+           {% tailwind_css %}
+        {% htmx_script %}    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-white text-gray-800 font-sans antialiased">
+
+    <!-- Navbar -->
+    <header class="bg-white shadow-md fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-2xl font-bold text-green-700">AfriShop</a>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#products" class="hover:text-green-600 transition">Products</a>
+                    <a href="#about" class="hover:text-green-600 transition">About</a>
+                    <a href="#contact" class="hover:text-green-600 transition">Contact</a>
+                    <a href="{#% url 'login' %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Login</a>
+                </nav>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button @click="open = !open" x-data="{ open: false }" class="focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute top-16 left-0 w-full bg-white shadow-md md:hidden">
+                        <a href="#products" class="block px-4 py-2 hover:bg-green-100">Products</a>
+                        <a href="#about" class="block px-4 py-2 hover:bg-green-100">About</a>
+                        <a href="#contact" class="block px-4 py-2 hover:bg-green-100">Contact</a>
+                        <a href="{#% url 'login' %}" class="block px-4 py-2 bg-green-600 text-white text-center rounded hover:bg-green-700 mt-2">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-24 bg-green-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4">Discover Authentic African Traditions</h1>
+            <p class="text-lg sm:text-xl text-gray-700 mb-8">Shop traditional medicine, beads, sculptures, and unique handmade crafts from Africa.</p>
+            <a href="#products" class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Featured Products</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Example Product Card -->
+                <div class="border rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition">
+                    <img src="{% static 'images/beads.jpg' %}" alt="Traditional Beads" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Traditional Beads</h3>
+                        <p class="text-green-600 font-bold mt-2">$25</p>
+                        <button class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- Repeat product cards dynamically with Django context -->
+                {% for product in products %}
+                <div class="border rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ product.name }}</h3>
+                        <p class="text-green-600 font-bold mt-2">${{ product.price }}</p>
+                        <button class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Add to Cart</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-green-50">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">About AfriShop</h2>
+            <p class="text-gray-700 text-lg">AfriShop connects artisans across Africa with the world. We specialize in authentic traditional products including medicine, handmade crafts, beads, and sculptures. Supporting local communities and preserving African heritage is at the heart of what we do.</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-6">Get in Touch</h2>
+            <form action="{#% url 'contact' %}" method="POST" class="grid grid-cols-1 gap-6">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Your Name" class="border rounded p-3 w-full focus:ring-green-500 focus:border-green-500">
+                <input type="email" name="email" placeholder="Your Email" class="border rounded p-3 w-full focus:ring-green-500 focus:border-green-500">
+                <textarea name="message" rows="5" placeholder="Your Message" class="border rounded p-3 w-full focus:ring-green-500 focus:border-green-500"></textarea>
+                <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; {{ year }} AfriShop. All rights reserved.</p>
+        </div>
+    </footer>
+       <-- Alpine.js (CDN) -->
+    <script defer src="{% static 'cdn.min.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

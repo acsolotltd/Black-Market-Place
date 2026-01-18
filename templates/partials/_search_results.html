@@ -1,0 +1,15 @@
+<div class="space-y-4">
+    {% if products %}
+        {% for product in products %}
+        <div class="flex items-center justify-between border-b border-gray-700 py-2">
+            <div class="flex items-center space-x-2">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-12 h-12 object-cover rounded">
+                <span>{{ product.name }}</span>
+            </div>
+            <span>${{ product.price }}</span>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-gray-400">No products found.</p>
+    {% endif %}
+</div>

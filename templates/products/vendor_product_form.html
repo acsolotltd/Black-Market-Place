@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-12">
+
+<h1 class="text-3xl font-bold mb-8">Add New Product</h1>
+
+<form method="post" enctype="multipart/form-data" class="space-y-10">
+    {% csrf_token %}
+
+    <!-- Product Fields -->
+    <div class="bg-neutral-900 p-6 rounded-xl border border-neutral-800 space-y-4">
+        {{ form.as_p }}
+    </div>
+
+    <!-- Images -->
+    <div class="bg-neutral-900 p-6 rounded-xl border border-neutral-800">
+        <h2 class="text-xl font-semibold mb-4">Product Images</h2>
+        {{ formset.management_form }}
+
+        <div class="grid md:grid-cols-3 gap-4">
+            {% for form in formset %}
+                <div class="border border-neutral-700 p-4 rounded">
+                    {{ form.image }}
+                    {{ form.position }}
+                    {{ form.DELETE }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <button class="px-8 py-3 bg-amber-500 text-black font-semibold rounded-lg">
+        Save Product
+    </button>
+</form>
+
+</main>
+{% endblock %}
